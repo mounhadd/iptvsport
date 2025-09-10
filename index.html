@@ -1,0 +1,303 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPTV Sport</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    nav {
+      background-color: #343a40;
+      padding: 1em;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 1em;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #ddd;
+    }
+    .hero {
+      text-align: center;
+      background-color: #343a40;
+      color: white;
+      padding: 3em 1em;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+    }
+    .hero p {
+      font-size: 1.2em;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2em;
+    }
+    .section {
+      margin: 2em 0;
+    }
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1em;
+      text-align: center;
+    }
+    .plan {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1em;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .plan h3 {
+      color: #007bff;
+    }
+    .plan p {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    .payment {
+      margin-top: 1em;
+    }
+    .payment button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .payment button:hover {
+      background-color: #218838;
+    }
+    .wallet {
+      margin-top: 1em;
+      font-style: italic;
+    }
+    .qr-code {
+      margin: 1em auto;
+      text-align: center;
+    }
+    .qr-code img {
+      max-width: 200px;
+      height: auto;
+    }
+    .form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .form input, .form textarea {
+      width: 100%;
+      padding: 0.8em;
+      margin: 0.5em 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .form button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .form button:hover {
+      background-color: #0069d9;
+    }
+    #coupons {
+      display: none; /* Host changes to display: block to enable */
+    }
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 1em;
+      margin-top: 2em;
+    }
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2em;
+      }
+      nav a {
+        display: block;
+        margin: 0.5em 0;
+      }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>IPTV Sport</h1>
+    <p>Your Ultimate IPTV Private Server for Sports and More</p>
+  </header>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#plans">Plans</a>
+    <a href="#order">Order</a>
+    <a href="#renew">Renew</a>
+    <a href="#freetrial">Free Trial</a>
+    <a href="#coupons">Coupons</a>
+    <a href="#help">Help</a>
+    <a href="#contact">Contact</a>
+    <a href="#compatibility">Compatibility</a>
+  </nav>
+  <div class="hero" id="home">
+    <h1>IPTV PRIVATE SERVER</h1>
+    <p>+4,000 CHANNELS IN HD & SD, +17,000 LATEST MOVIES IN 4K & HD, PPV MOVIES, +1,400 TV SERIES, ADULTS VOD, PPV SPORT EVENTS AND INTERNATIONALS</p>
+    <p>STARTING FROM 50 USDT PER YEAR</p>
+  </div>
+  <div class="container">
+    <section id="compatibility" class="section">
+      <h2>Our Service Compatibility</h2>
+      <p>Our service is fully compatible with all accounts and applications that support the middleware IPTV Stalker or IPTV M3U Playlists. Here you have a small list of them:</p>
+      <!-- Add list items as needed -->
+    </section>
+    <section id="plans" class="section">
+      <h2>Our Plan</h2>
+      <div class="plans">
+        <div class="plan">
+          <h3>Standard Plan</h3>
+          <p>50 USDT /yr</p>
+          <p>Extendable to multiple years (e.g., 2 years: 100 USDT, 3 years: 150 USDT, etc.)</p>
+        </div>
+      </div>
+    </section>
+    <section id="order" class="section">
+      <h2>Order Now</h2>
+      <p>To order, make the payment and email us the receipt.</p>
+      <div class="payment">
+        <p><strong>Payment Method:</strong> USDT (ERC20 Network)</p>
+        <p><strong>Wallet Address:</strong> <code>0x293f8f4657d1886a0cab47864edc14afbc320b2f</code></p>
+        <div class="qr-code" id="order-qr"></div>
+        <p>Instructions: Scan the QR code or copy the wallet address to send USDT on the ERC20 network. You can use your Coinbase or Binance US account. If you don’t have one, please create an account: <a href="https://www.coinbase.com/">Coinbase</a> or <a href="https://www.binance.us/">Binance US</a>.</p>
+        <p>After payment, send receipt to mounhadd@proton.me with your details.</p>
+        <button onclick="alert('Proceeding to payment... Copy the wallet address or scan QR code and send via your crypto app.');">Pay Now</button>
+      </div>
+    </section>
+    <section id="renew" class="section">
+      <h2>Renew Subscription</h2>
+      <p>To renew, make another payment for the desired years and email us the receipt with your account details.</p>
+      <div class="payment">
+        <p><strong>Payment Method:</strong> USDT (ERC20 Network)</p>
+        <p><strong>Wallet Address:</strong> <code>0x293f8f4657d1886a0cab47864edc14afbc320b2f</code></p>
+        <div class="qr-code" id="renew-qr"></div>
+        <p>Instructions: Scan the QR code or copy the wallet address to send USDT on the ERC20 network. You can use your Coinbase or Binance US account. If you don’t have one, please create an account: <a href="https://www.coinbase.com/">Coinbase</a> or <a href="https://www.binance.us/">Binance US</a>.</p>
+        <p>After payment, send receipt to mounhadd@proton.me.</p>
+        <button onclick="alert('Proceeding to renewal payment...');">Renew Now</button>
+      </div>
+    </section>
+    <section id="freetrial" class="section">
+      <h2>Free Trial</h2>
+      <p>Try our service for free! Request a 24-hour trial below.</p>
+      <form class="form" onsubmit="alert('Trial request sent! We will email you soon.'); return false;">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Any additional info (e.g., device type)" rows="3"></textarea>
+        <button type="submit">Request Free Trial</button>
+      </form>
+    </section>
+    <section id="coupons" class="section">
+      <h2>Coupons</h2>
+      <p>Enter your coupon code to get a discount on your subscription!</p>
+      <form class="form" onsubmit="alert('Coupon submitted! We will verify and apply the discount.'); return false;">
+        <input type="text" placeholder="Coupon Code" required>
+        <button type="submit">Apply Coupon</button>
+      </form>
+      <p>Contact mounhadd@proton.me for coupon-related questions.</p>
+    </section>
+    <section id="help" class="section">
+      <h2>Help & FAQ</h2>
+      <p>Need assistance? Here are some common questions:</p>
+      <ul>
+        <li><strong>How do I pay?</strong> Use USDT on ERC20 via the wallet above.</li>
+        <li><strong>What if I have issues?</strong> Email mounhadd@proton.me or contact Mounir Haddad on Facebook.</li>
+        <li><strong>Compatible devices?</strong> See Compatibility section.</li>
+      </ul>
+      <p>For more info, contact Mounir Haddad on Facebook.</p>
+    </section>
+    <section id="contact" class="section">
+      <h2>Contact Us</h2>
+      <p>For more info, contact Mounir Haddad on Facebook.</p>
+      <p>Or email: mounhadd@proton.me</p>
+      <form class="form" onsubmit="alert('Message sent! We will reply soon.'); return false;">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </section>
+  </div>
+  <footer>
+    <p>&copy; 2025 IPTV Sport. All rights reserved.</p>
+  </footer>
+  <script>
+    // Generate QR codes for USDT wallet
+    new QRCode(document.getElementById("order-qr"), {
+      text: "0x293f8f4657d1886a0cab47864edc14afbc320b2f",
+      width: 200,
+      height: 200
+    });
+    new QRCode(document.getElementById("renew-qr"), {
+      text: "0x293f8f4657d1886a0cab47864edc14afbc320b2f",
+      width: 200,
+      height: 200
+    });
+  </script>
+</body>
+</html>
